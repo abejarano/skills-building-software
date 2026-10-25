@@ -1,6 +1,6 @@
 ---
 name: story
-description: Takes ONE user story from the backlog, adds acceptance criteria and proposes an implementation plan.
+description: Takes ONE user story from the backlog, adds 2-3 acceptance criteria and proposes a mini implementation plan for approval. Writes no code; implementation is /pair's job.
 disable-model-invocation: true
 ---
 
@@ -30,16 +30,26 @@ A block ready to paste into the issue.
 ## Story
 As a <actor>, I want <action>, so that <benefit>.
 
-## Acceptance criteria
+## Acceptance Criteria
 - [ ] Given <context>, when <action>, then <result>.
 - [ ] ...
 
+## Business Rules
+- BR-01: <confirmed business constraint>
+- BR-02: <applicable calculation, condition, permission, or invariant>
+
 ## Plan
+- <minimal implementation step>
 - ...
 
-## Out of scope
-- <what's left out of this story, so it doesn't sneak in>
+## Dependencies
+- <actual prerequisite, if any>
+
+## Out of Scope
+- <what is explicitly excluded from this story>
 
 ## Suggestions (your call)
-- <optional>
+- <optional suggestion backed by the existing code>
 ```
+
+If no additional business rules apply, replace the example `BR-XX` entries with `No additional business rules identified.` Never create rules just to fill the template.
