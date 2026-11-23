@@ -23,10 +23,9 @@ Usa esta skill cuando:
 
 - una feature fue implementada y necesita revisión;
 - el usuario pida “revisa el cambio”;
-- exista un diff pendiente;
+- exista un diff pendiente o un cambio commiteado en una rama/PR;
 - un agente implementador diga que terminó;
 - antes de mover una tarea a `done`;
-- antes de escribir en `progress/history.md`;
 - antes de considerar una feature como finalizada;
 - después de una corrección de bug;
 - después de un refactor;
@@ -63,12 +62,33 @@ AGENTS.md
 CLAUDE.md
 PRODUCT.md
 README.md
-progress/current.md
-progress/history.md
 package.json
 ```
 
-También revisar archivos modificados mediante el mecanismo disponible en el entorno:
+También revisar los archivos modificados. Identificar primero la **base de revisión**:
+
+- Si el usuario dio una rama base, un PR o un commit de referencia, comparar el cambio **commiteado** contra esa base.
+  No asumir `main` ni otra rama. Si la base es remota, usar `origin/<rama>` y hacer fetch si está desactualizada.
+- Si no la dio, inferirla del tracking de la rama (`git branch -vv`, `git merge-base`) o preguntar. Si no se puede
+  determinar, decirlo y revisar solo lo que haya en el working tree.
+
+Contra la base `<base>`:
+
+```bash
+git log --oneline <base>..HEAD
+git diff <base>...HEAD --stat
+git diff <base>...HEAD
+```
+
+Contra un rango explícito `<desde>..<hasta>`:
+
+```bash
+git log --oneline <desde>..<hasta>
+git diff <desde>..<hasta> --stat
+git diff <desde>..<hasta>
+```
+
+Si además hay cambios sin commitear en el working tree:
 
 ```bash
 git status --short
@@ -83,7 +103,7 @@ git diff --cached --stat
 git diff --cached
 ```
 
-No inventar resultados de comandos. Si no se pueden ejecutar, decirlo claramente.
+No inventar la base, el rango ni resultados de comandos. Si no se pueden ejecutar, decirlo claramente. Si hay cambios sin commitear, indicar en la evidencia que no forman parte del cambio commiteado.
 
 ---
 
@@ -281,8 +301,10 @@ approved | changes_requested | blocked
 
 ### Evidencia revisada
 
-- `git status --short`
-- `git diff --stat`
+- base o rango revisado (`<base>...HEAD` o `<desde>..<hasta>`)
+- `git log --oneline <base>..HEAD` o `git log --oneline <desde>..<hasta>`
+- `git diff <base>...HEAD --stat` o `git diff <desde>..<hasta> --stat`
+- `git status --short` y `git diff`, si había cambios sin commitear
 - scripts ejecutados, si aplica
 
 ### Hallazgos
@@ -339,7 +361,7 @@ Pedir cambios si:
 
 Marcar `blocked` si:
 
-- no se puede inspeccionar el diff;
+- no se puede inspeccionar el diff o no existe la base/rango indicado;
 - faltan archivos críticos;
 - no se puede correr una validación obligatoria por error inesperado;
 - la tarea es ambigua y no hay suficiente contexto;
