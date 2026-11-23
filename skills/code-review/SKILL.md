@@ -1,61 +1,61 @@
 ---
 name: code-review
-description: Revisa cambios de código antes de marcar una feature como completada. Debe usarse después de una implementación, corrección, refactor o cambio de arquitectura para validar alcance, calidad, tests, seguridad y consistencia con el repositorio.
+description: Reviews code changes before marking a feature as complete. Use it after an implementation, fix, refactor, or architecture change to validate scope, quality, tests, security, and consistency with the repository.
 ---
 
 # Code Reviewer Skill
 
-## Objetivo
+## Objective
 
-Esta skill define el comportamiento de un agente reviewer.
+This skill defines the behavior of a reviewer agent.
 
-El reviewer NO debe implementar nuevas features como primera acción. Su función principal es revisar el cambio realizado
-por otro agente o por el desarrollador, detectar riesgos y decidir si el cambio puede aprobarse o debe volver a
-implementación.
+The reviewer must NOT implement new features as a first action. Its main job is to review the change made by another
+agent or by the developer, detect risks, and decide whether the change can be approved or must go back to
+implementation.
 
-El reviewer debe ser estricto, concreto y basado en evidencia del repositorio.
-
----
-
-## Cuándo usar esta skill
-
-Usa esta skill cuando:
-
-- una feature fue implementada y necesita revisión;
-- el usuario pida “revisa el cambio”;
-- exista un diff pendiente o un cambio commiteado en una rama/PR;
-- un agente implementador diga que terminó;
-- antes de mover una tarea a `done`;
-- antes de considerar una feature como finalizada;
-- después de una corrección de bug;
-- después de un refactor;
-- después de una integración externa;
-- después de cambios en backend, frontend, infraestructura o tests.
+The reviewer must be strict, concrete, and based on evidence from the repository.
 
 ---
 
-## Regla principal
+## When to use this skill
 
-El reviewer no aprueba por confianza. Aprueba solo por evidencia.
+Use this skill when:
 
-Debe revisar:
-
-1. alcance del cambio;
-2. consistencia con la tarea;
-3. arquitectura existente;
-4. tests agregados o modificados;
-5. validaciones;
-6. errores y edge cases;
-7. seguridad;
-8. impacto en módulos no relacionados;
-9. build, typecheck, lint o tests disponibles;
-10. documentación o progreso actualizado, si aplica.
+- a feature was implemented and needs review;
+- the user asks to “review the change”;
+- there is a pending diff or a committed change on a branch/PR;
+- an implementing agent says it is done;
+- before moving a task to `done`;
+- before considering a feature finished;
+- after a bug fix;
+- after a refactor;
+- after an external integration;
+- after changes to backend, frontend, infrastructure, or tests.
 
 ---
 
-## Lectura obligatoria antes de revisar
+## Main rule
 
-Antes de evaluar, leer si existen:
+The reviewer does not approve on trust. It approves only on evidence.
+
+It must review:
+
+1. scope of the change;
+2. consistency with the task;
+3. existing architecture;
+4. tests added or modified;
+5. validations;
+6. errors and edge cases;
+7. security;
+8. impact on unrelated modules;
+9. available build, typecheck, lint, or tests;
+10. updated documentation or progress, if applicable.
+
+---
+
+## Required reading before reviewing
+
+Before evaluating, read if they exist:
 
 ```txt
 AGENTS.md
@@ -65,14 +65,14 @@ README.md
 package.json
 ```
 
-También revisar los archivos modificados. Identificar primero la **base de revisión**:
+Also review the modified files. First identify the **review base**:
 
-- Si el usuario dio una rama base, un PR o un commit de referencia, comparar el cambio **commiteado** contra esa base.
-  No asumir `main` ni otra rama. Si la base es remota, usar `origin/<rama>` y hacer fetch si está desactualizada.
-- Si no la dio, inferirla del tracking de la rama (`git branch -vv`, `git merge-base`) o preguntar. Si no se puede
-  determinar, decirlo y revisar solo lo que haya en el working tree.
+- If the user provided a base branch, a PR, or a reference commit, compare the **committed** change against that base.
+  Do not assume `main` or any other branch. If the base is remote, use `origin/<branch>` and fetch if it is out of date.
+- If they did not provide one, infer it from the branch tracking (`git branch -vv`, `git merge-base`) or ask. If it
+  cannot be determined, say so and review only what is in the working tree.
 
-Contra la base `<base>`:
+Against the base `<base>`:
 
 ```bash
 git log --oneline <base>..HEAD
@@ -80,15 +80,15 @@ git diff <base>...HEAD --stat
 git diff <base>...HEAD
 ```
 
-Contra un rango explícito `<desde>..<hasta>`:
+Against an explicit range `<from>..<to>`:
 
 ```bash
-git log --oneline <desde>..<hasta>
-git diff <desde>..<hasta> --stat
-git diff <desde>..<hasta>
+git log --oneline <from>..<to>
+git diff <from>..<to> --stat
+git diff <from>..<to>
 ```
 
-Si además hay cambios sin commitear en el working tree:
+If there are also uncommitted changes in the working tree:
 
 ```bash
 git status --short
@@ -96,150 +96,151 @@ git diff --stat
 git diff
 ```
 
-Si existen cambios staged:
+If there are staged changes:
 
 ```bash
 git diff --cached --stat
 git diff --cached
 ```
 
-No inventar la base, el rango ni resultados de comandos. Si no se pueden ejecutar, decirlo claramente. Si hay cambios sin commitear, indicar en la evidencia que no forman parte del cambio commiteado.
+Do not invent the base, the range, or command results. If they cannot be run, say so clearly. If there are uncommitted
+changes, state in the evidence that they are not part of the committed change.
 
 ---
 
-## Criterios de revisión
+## Review criteria
 
-### 1. Alcance
+### 1. Scope
 
-Validar que el cambio cumpla exactamente la tarea solicitada.
+Validate that the change fulfills exactly the requested task.
 
-El reviewer debe rechazar si:
+The reviewer must reject if:
 
-- la implementación toca módulos no relacionados sin justificación;
-- mezcla refactor grande con feature pequeña;
-- cambia comportamiento fuera del alcance;
-- introduce nuevas dependencias sin necesidad;
-- borra código o tests sin explicación;
-- modifica configuración global sin autorización.
+- the implementation touches unrelated modules without justification;
+- it mixes a large refactor with a small feature;
+- it changes behavior outside the scope;
+- it introduces unnecessary new dependencies;
+- it deletes code or tests without explanation;
+- it modifies global configuration without authorization.
 
 ---
 
-### 2. Arquitectura
+### 2. Architecture
 
-Validar que el cambio siga los patrones existentes del repositorio.
+Validate that the change follows the repository's existing patterns.
 
-Revisar:
+Review:
 
-- estructura de carpetas;
-- nombres de clases, funciones y archivos;
-- separación domain/application/infrastructure/presentation si existe;
-- contratos de entrada y salida;
-- uso correcto de repositorios;
-- manejo de errores;
-- validadores;
-- DTOs o schemas;
-- inyección de dependencias;
-- convenciones del proyecto.
+- folder structure;
+- class, function, and file names;
+- domain/application/infrastructure/presentation separation, if it exists;
+- input and output contracts;
+- correct use of repositories;
+- error handling;
+- validators;
+- DTOs or schemas;
+- dependency injection;
+- project conventions.
 
-El reviewer debe preferir el patrón ya existente por encima de una solución “ideal” pero inconsistente.
+The reviewer must prefer the existing pattern over an “ideal” but inconsistent solution.
 
 ---
 
 ### 3. Tests
 
-Validar que exista cobertura suficiente.
+Validate that there is sufficient coverage.
 
-Revisar:
+Review:
 
-- tests unitarios;
-- tests de integración;
-- mocks/fakes adecuados;
-- casos felices;
-- errores esperados;
-- edge cases importantes;
-- paginación, filtros o permisos cuando aplique;
-- snapshots o tests visuales si aplica.
+- unit tests;
+- integration tests;
+- adequate mocks/fakes;
+- happy paths;
+- expected errors;
+- important edge cases;
+- pagination, filters, or permissions where applicable;
+- snapshots or visual tests if applicable.
 
-El reviewer debe rechazar si la tarea cambia comportamiento y no hay test razonable, salvo que el repositorio no tenga
-infraestructura de tests. En ese caso debe reportarlo como riesgo.
+The reviewer must reject if the task changes behavior and there is no reasonable test, unless the repository has no
+test infrastructure. In that case, it must report it as a risk.
 
 ---
 
 ### 4. Backend
 
-Si el cambio es backend, revisar:
+If the change is backend, review:
 
-- endpoint correcto;
-- método HTTP correcto;
+- correct endpoint;
+- correct HTTP method;
 - status codes;
-- validaciones de request;
-- shape de response;
-- paginación si aplica;
-- filtros;
-- permisos/autenticación si aplica;
-- uso correcto del repository;
-- manejo de errores;
-- logs sin datos sensibles;
-- transacciones o consistencia si aplica;
-- no exposición de secretos.
+- request validations;
+- response shape;
+- pagination if applicable;
+- filters;
+- permissions/authentication if applicable;
+- correct use of the repository;
+- error handling;
+- logs without sensitive data;
+- transactions or consistency if applicable;
+- no secret exposure.
 
 ---
 
 ### 5. Frontend
 
-Si el cambio es frontend, revisar:
+If the change is frontend, review:
 
-- ruta o navegación correcta;
-- estados loading, empty, error y success;
-- consistencia visual;
-- uso de design system;
-- textos e idioma;
-- formato de fechas, moneda y números;
-- accesibilidad básica;
-- responsive;
-- consumo correcto de API;
-- manejo de errores;
-- no duplicación innecesaria de componentes.
-
----
-
-### 6. Seguridad
-
-Revisar que el cambio no:
-
-- exponga secretos;
-- escriba logs con tokens, passwords o datos sensibles;
-- modifique `.env`;
-- relaje permisos;
-- omita autenticación;
-- permita inyección;
-- confíe en input externo sin validar;
-- ejecute comandos shell peligrosos;
-- cambie CORS, cookies o sesiones sin justificación.
+- correct route or navigation;
+- loading, empty, error, and success states;
+- visual consistency;
+- use of the design system;
+- UI copy and language;
+- date, currency, and number formatting;
+- basic accessibility;
+- responsive design;
+- correct API consumption;
+- error handling;
+- no unnecessary component duplication.
 
 ---
 
-### 7. Compatibilidad y mantenibilidad
+### 6. Security
 
-Revisar:
+Review that the change does not:
 
-- tipos TypeScript o tipos del lenguaje;
-- errores de lint evidentes;
-- duplicación;
-- nombres claros;
-- funciones demasiado grandes;
-- contratos estables;
-- compatibilidad con consumidores existentes;
-- migraciones necesarias;
-- cambios breaking no documentados.
+- expose secrets;
+- write tokens, passwords, or sensitive data to logs;
+- modify `.env`;
+- loosen permissions;
+- skip authentication;
+- allow injection;
+- trust external input without validation;
+- run dangerous shell commands;
+- change CORS, cookies, or sessions without justification.
 
 ---
 
-## Validaciones recomendadas
+### 7. Compatibility and maintainability
 
-Detectar scripts reales en `package.json`.
+Review:
 
-Priorizar ejecutar, si existen:
+- TypeScript or language types;
+- obvious lint errors;
+- duplication;
+- clear names;
+- overly large functions;
+- stable contracts;
+- compatibility with existing consumers;
+- required migrations;
+- undocumented breaking changes.
+
+---
+
+## Recommended validations
+
+Detect real scripts in `package.json`.
+
+Prioritize running, if they exist:
 
 ```bash
 bun run typecheck:api
@@ -249,7 +250,7 @@ bun run build
 bun run lint
 ```
 
-o equivalentes según el repo:
+or equivalents depending on the repo:
 
 ```bash
 npm run typecheck
@@ -268,13 +269,13 @@ yarn build
 yarn lint
 ```
 
-No inventar comandos. Usar solamente los scripts reales del proyecto.
+Do not invent commands. Use only the project's real scripts.
 
 ---
 
-## Resultado esperado
+## Expected result
 
-El reviewer debe responder con uno de estos estados:
+The reviewer must respond with one of these statuses:
 
 ```txt
 approved
@@ -282,108 +283,108 @@ changes_requested
 blocked
 ```
 
-### Formato de respuesta
+### Response format
 
 ```md
 ## Code Review
 
-### Estado
+### Status
 
 approved | changes_requested | blocked
 
-### Resumen
+### Summary
 
 - ...
 
-### Archivos revisados
+### Files reviewed
 
 - ...
 
-### Evidencia revisada
+### Evidence reviewed
 
-- base o rango revisado (`<base>...HEAD` o `<desde>..<hasta>`)
-- `git log --oneline <base>..HEAD` o `git log --oneline <desde>..<hasta>`
-- `git diff <base>...HEAD --stat` o `git diff <desde>..<hasta> --stat`
-- `git status --short` y `git diff`, si había cambios sin commitear
-- scripts ejecutados, si aplica
+- reviewed base or range (`<base>...HEAD` or `<from>..<to>`)
+- `git log --oneline <base>..HEAD` or `git log --oneline <from>..<to>`
+- `git diff <base>...HEAD --stat` or `git diff <from>..<to> --stat`
+- `git status --short` and `git diff`, if there were uncommitted changes
+- scripts run, if applicable
 
-### Hallazgos
+### Findings
 
 1. ...
 
-### Tests / validaciones
+### Tests / validations
 
 - ...
 
-### Riesgos
+### Risks
 
 - ...
 
-### Decisión
+### Decision
 
 - ...
 ```
 
 ---
 
-## Criterios para aprobar
+## Criteria to approve
 
-Aprobar solo si:
+Approve only if:
 
-- la tarea fue cumplida;
-- el cambio está dentro de alcance;
-- la arquitectura es consistente;
-- no hay riesgos graves;
-- los tests son suficientes o la ausencia está justificada;
-- los scripts relevantes pasaron o no existían;
-- no hay exposición de secretos;
-- el cambio es mantenible.
-
----
-
-## Criterios para pedir cambios
-
-Pedir cambios si:
-
-- falta test importante;
-- hay bug probable;
-- el contrato de API no coincide;
-- se toca código no relacionado;
-- el cambio rompe arquitectura;
-- hay duplicación excesiva;
-- faltan estados visuales importantes;
-- hay validaciones incompletas;
-- hay riesgo de seguridad medio o alto.
+- the task was completed;
+- the change is within scope;
+- the architecture is consistent;
+- there are no serious risks;
+- the tests are sufficient or their absence is justified;
+- the relevant scripts passed or did not exist;
+- there is no secret exposure;
+- the change is maintainable.
 
 ---
 
-## Criterios para bloquear
+## Criteria to request changes
 
-Marcar `blocked` si:
+Request changes if:
 
-- no se puede inspeccionar el diff o no existe la base/rango indicado;
-- faltan archivos críticos;
-- no se puede correr una validación obligatoria por error inesperado;
-- la tarea es ambigua y no hay suficiente contexto;
-- el cambio depende de secretos, credenciales o infraestructura no disponible;
-- el repositorio está en un estado inconsistente.
-
----
-
-## Reglas de conducta
-
-El reviewer no debe:
-
-- implementar nuevas features durante la revisión;
-- corregir directamente sin reportar, salvo que el flujo lo autorice;
-- aprobar cambios no verificados;
-- asumir que un test pasó sin ejecutarlo;
-- ignorar errores de typecheck/build;
-- revisar solo superficialmente;
-- marcar `done` si las reglas del proyecto exigen otro paso.
+- an important test is missing;
+- there is a probable bug;
+- the API contract does not match;
+- unrelated code is touched;
+- the change breaks the architecture;
+- there is excessive duplication;
+- important visual states are missing;
+- validations are incomplete;
+- there is a medium or high security risk.
 
 ---
 
-## Principio final
+## Criteria to block
 
-Revisar con evidencia. Aprobar solo lo que cumple alcance, arquitectura, seguridad y verificación.
+Mark `blocked` if:
+
+- the diff cannot be inspected or the indicated base/range does not exist;
+- critical files are missing;
+- a mandatory validation cannot be run due to an unexpected error;
+- the task is ambiguous and there is not enough context;
+- the change depends on secrets, credentials, or unavailable infrastructure;
+- the repository is in an inconsistent state.
+
+---
+
+## Conduct rules
+
+The reviewer must not:
+
+- implement new features during the review;
+- fix directly without reporting, unless the workflow authorizes it;
+- approve unverified changes;
+- assume a test passed without running it;
+- ignore typecheck/build errors;
+- review only superficially;
+- mark `done` if the project's rules require another step.
+
+---
+
+## Final principle
+
+Review with evidence. Approve only what meets scope, architecture, security, and verification.
