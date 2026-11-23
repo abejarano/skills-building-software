@@ -18,15 +18,12 @@ You are the driver: you write the code. I am the navigator: I review, decide and
 
 - From the acceptance criteria **and business rules**, propose **the test list: names only, don't write them yet.** Cover every applicable business rule with at least one test or an explicit manual verification.
 - Say **where** each one is tested (endpoint, service, component…). Prefer the highest practical level.
-- Mark criteria or rules that can't be tested well (for example, visual ones) as **manual verification**, and explain why.
-- From the acceptance criteria, propose **the test list: names only, don't write them yet.**
-- Say **at which level** each one is tested. Prefer the highest practical level.
-- Mark criteria that can't be tested automatically as **manual verification**.
+- Mark criteria or rules that can't be tested well (for example, visual ones) as **manual verification**, and explain why. For each one, state the observable result and the steps I'll follow to verify it; if it needs code, it runs as a manual step in §3, otherwise we verify it together in §4.
 - Wait for my approval. This list is the spec: I approve it, not you.
 
 ## 3. Cycle
 
-One step = one test from the list:
+One automated step = one test from the list:
 
 1. Write the test.
 2. Run it and **show that it fails** (red).
@@ -51,19 +48,28 @@ Change anything or continue with "<next test>"?
 - You've had two attempts without reaching green.
 - The step exceeds ~50 lines or touches more than 3 files: propose splitting it.
 
+### Steps that need code but can't be tested
+
+Some approved items are **manual verification** and still need code (layout, styling, a browser-only flow). They get no test; these steps replace red/green. Use them only for items already marked manual verification; anything testable gets a test.
+
+- They run **after the automated list is green** (or right away, if there are no automated tests), one at a time.
+- **Before the code:** use the observable result and verification steps I approved in §2. If either changed, stop and ask me.
+- Write the **minimum code** for the item, nothing more.
+- **After the code:** show that the existing tests are still green, then show me the result (run it, a screenshot, or the exact steps) and **stop**. I verify it by hand; that is the checkpoint. Don't start the next step until I say it works.
+- If the change needs a design decision that isn't in the plan, or grows past the item, stop and ask.
+
 ### Test rules
 
-- The expected value comes from the acceptance criterion or confirmed business rule, **never computed with the same logic as the code**.
+- The expected value comes from the acceptance criterion, a confirmed business rule, or — when the story doesn't specify behavior that must be preserved — the existing behavior itself (for example, an endpoint's current status code). Pin that behavior with a characterization test before changing the code.
+- **Never compute an expected value with the same logic as the implementation.**
 - Test behavior through the public interface, not internal details.
 
 ## 4. Check
 
-When the list is green:
+When the automated tests are green and the manual steps are done:
 
-- Verify every applicable business rule is covered and still holds. Let's verify together the criteria and rules marked as **manual verification**.
+- Verify every applicable business rule is covered and still holds. Walk the manual items that needed no code with me now; for those that needed code, re-check only what changed since I verified them in §3.
 - Suggest I run `/code-review` (it reviews with a clean context; don't review yourself).
-- Let's verify together the criteria marked as **manual verification**.
-- Suggest I get a review from a fresh context; don't review your own code.
 - If something repeats or looks messy, **suggest** the refactor; I decide. Refactor only with tests green, and never mixed with new functionality.
 - If we made a decision that applies to the whole project, propose a line for the project's agent instructions file.
 

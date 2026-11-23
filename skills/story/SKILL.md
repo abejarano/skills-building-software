@@ -1,6 +1,6 @@
 ---
 name: story
-description: Takes ONE user story from the backlog, adds 2-3 acceptance criteria and proposes a mini implementation plan for approval. Writes no code; implementation is /pair's job.
+description: Takes ONE user story from the backlog, adds acceptance criteria (typically 2-3) and proposes a mini implementation plan for approval. Writes no code; implementation is /pair's job.
 disable-model-invocation: true
 ---
 
@@ -11,8 +11,8 @@ We refine a single story, right before building it. You propose and I decide.
 ## Steps
 
 1. **Read the story** I give you and review the current code and the project's agent instructions file to understand the context.
-2. **Acceptance criteria.** Propose in Given/When/Then format. They only describe *what* the user sees or gets, never *how* it's implemented.
-3. **If it needs more than 3 criteria, evaluate splitting it.** Deliver the new stories in backlog format (`As a…, I want…, so that…`) for me to add to the tracker, and we continue with the first one.
+2. **Acceptance criteria.** Propose in Given/When/Then format. **2–3 is typical, not a fixed count:** use as many as the story needs to be clear. They only describe *what* the user sees or gets, never *how* it's implemented.
+3. **If it needs more than 3 criteria, evaluate splitting it.** Split only when each part is an independently deliverable vertical story: it can ship on its own, without waiting for the others, and gives the user something. Deliver the new stories in backlog format (`As a…, I want…, so that…`) for me to add to the tracker, and we continue with the first one. If the parts can't ship independently, keep it as one story and tell me why the criteria belong together.
 4. **Mini plan.** 5 bullets max, no code or file names. How it cuts through the layers.
 5. **Wait for my approval.** We adjust until I say yes.
 
